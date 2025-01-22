@@ -1,0 +1,319 @@
+// 变量定义
+@primary-color: var(--vscode-textLink-foreground);
+@background-color: var(--vscode-editor-background);
+@text-color: var(--vscode-editor-foreground);
+@border-color: var(--vscode-panel-border);
+@hover-color: var(--vscode-editor-inactiveSelectionBackground);
+@code-background: var(--vscode-textCodeBlock-background);
+@quote-background: var(--vscode-editor-inactiveSelectionBackground);
+@meta-color: var(--vscode-descriptionForeground);
+
+// 全局样式
+body {
+  padding: 0;
+  margin: 0;
+  font-family: var(--vscode-font-family);
+  color: @text-color;
+  line-height: 1.6;
+  font-size: 14px;
+}
+p {
+  margin: 0;
+}
+.meta {
+  display: none;
+}
+.fa {
+  display: none;
+}
+
+// 帖子容器
+.post-container {
+  max-width: 900px;
+  margin: 0 auto;
+
+  .post-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    line-height: 1.3;
+    color: @text-color;
+  }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: @hover-color;
+    border-radius: 8px;
+
+    &-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+
+      .username {
+        font-weight: 500;
+        color: @primary-color;
+      }
+    }
+
+    &-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: @meta-color;
+      font-size: 13px;
+    }
+  }
+
+  .post-content {
+    line-height: 1.8;
+    margin-bottom: 48px;
+
+    pre {
+      background: @code-background;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: var(--vscode-editor-font-family);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 16px 0;
+    }
+
+    code {
+      font-family: var(--vscode-editor-font-family);
+      font-size: 0.9em;
+      padding: 2px 6px;
+      background: @code-background;
+      border-radius: 4px;
+    }
+  }
+}
+
+// 评论区
+.comments-container {
+  margin-top: 48px;
+  border-top: 1px solid @border-color;
+  padding-top: 24px;
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 15px;
+    color: @text-color;
+  }
+
+  .comment {
+    margin-bottom: 24px;
+    padding: 10px 16px;
+    background: @hover-color;
+    border-radius: 12px;
+
+    &-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    &-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: @meta-color;
+      font-size: 13px;
+    }
+
+    &-content {
+      margin-top: 12px;
+      line-height: 1.7;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      .avatar {
+        border-radius: 4px;
+        &:hover {
+          transform: scale(1.02);
+        }
+      }
+    }
+
+    .reply-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px;
+      background: @background-color;
+      border-radius: 16px;
+      font-size: 13px;
+
+      .reply-to {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .avatar {
+          width: 24px;
+          height: 24px;
+        }
+      }
+
+      .reply-icon {
+        font-size: 12px;
+        color: @meta-color;
+      }
+    }
+  }
+}
+
+// Onebox 样式
+.onebox {
+  border: 1px solid @border-color;
+  border-radius: 8px;
+  padding: 8px 16px;
+  background: @background-color;
+  transition: transform 0.2s ease;
+  margin-bottom: 8px;
+
+  .source {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 5px;
+
+    img {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+    }
+  }
+
+  &-body {
+    h3 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: @primary-color;
+    }
+
+    > img,
+    .aspect-image {
+      float: left;
+      max-width: 200px;
+      height: auto;
+      margin-right: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    p {
+      margin: 0;
+      color: @meta-color;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .source {
+      color: @meta-color;
+      font-size: 12px;
+      margin-top: 12px;
+    }
+
+    a {
+      color: @primary-color;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        text-decoration: none;
+        opacity: 0.8;
+      }
+    }
+  }
+}
+
+// 引用样式
+blockquote,
+.quote {
+  margin: 16px 0;
+  padding: 16px 24px;
+  background: @quote-background;
+  border-left: 4px solid @primary-color;
+  border-radius: 8px;
+}
+
+.quote {
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid @border-color;
+
+    .avatar {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+// 图片预览
+.lightbox-wrapper {
+  display: inline-block;
+  position: relative;
+  margin: 8px 0;
+  border-radius: 8px;
+  overflow: hidden;
+
+  img {
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+.load-more {
+  text-align: center;
+  margin: 20px 0;
+
+  .load-more-button {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: var(--vscode-button-hoverBackground);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}

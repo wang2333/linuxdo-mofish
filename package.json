@@ -1,0 +1,116 @@
+{
+  "name": "linuxdo",
+  "displayName": "Linux.do Forum",
+  "description": "Access linux.do forum in VSCode",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "linuxdo-explorer",
+          "title": "LINUX DO",
+          "icon": "resources/forum.svg"
+        }
+      ]
+    },
+    "views": {
+      "linuxdo-explorer": [
+        {
+          "id": "linuxdoPosts",
+          "name": "话题",
+          "group": "navigation@1"
+        },
+        {
+          "id": "collect",
+          "name": "收藏",
+          "group": "navigation@1"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "linuxdo.nextPage",
+        "title": "下一页",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "linuxdo.prevPage",
+        "title": "上一页",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "linuxdo.resetPage",
+        "title": "重置",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "linuxdo.prevPage",
+          "when": "view == linuxdoPosts && viewItem =~ /post-group-*/",
+          "group": "inline"
+        },
+        {
+          "command": "linuxdo.nextPage",
+          "when": "view == linuxdoPosts && viewItem =~ /post-group-*/",
+          "group": "inline"
+        },
+        {
+          "command": "linuxdo.resetPage",
+          "when": "view == linuxdoPosts && viewItem =~ /post-group-*/",
+          "group": "inline"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^16.x.x",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.3.8",
+    "css-loader": "^6.11.0",
+    "eslint": "^8.56.0",
+    "less": "^4.2.2",
+    "less-loader": "^12.2.0",
+    "mini-css-extract-plugin": "^2.9.2",
+    "style-loader": "^3.3.4",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@types/cheerio": "^0.22.35",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
