@@ -109,6 +109,7 @@
     }
   },
   "scripts": {
+    "prepare": "husky install",
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
@@ -129,6 +130,7 @@
     "@vscode/test-electron": "^2.3.8",
     "css-loader": "^6.11.0",
     "eslint": "^8.56.0",
+    "husky": "^9.1.7",
     "less": "^4.2.2",
     "less-loader": "^12.2.0",
     "mini-css-extract-plugin": "^2.9.2",
