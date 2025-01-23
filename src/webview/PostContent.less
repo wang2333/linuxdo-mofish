@@ -28,6 +28,11 @@ p {
   display: none;
 }
 
+.username.author {
+  color: var(--vscode-textLink-foreground);
+  font-weight: 600;
+}
+
 // 帖子容器
 .post-container {
   max-width: 900px;
@@ -143,7 +148,7 @@ p {
   }
 
   .comment {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     padding: 10px 16px;
     background: @hover-color;
     border-radius: 12px;
@@ -164,8 +169,7 @@ p {
     }
 
     &-content {
-      margin-top: 12px;
-      line-height: 1.7;
+      margin-top: 10px;
     }
 
     .user-info {
@@ -224,10 +228,6 @@ p {
     }
   }
 
-  .username.author {
-    color: var(--vscode-textLink-foreground);
-    font-weight: 600;
-  }
   .author-tag {
     display: inline-block;
     margin-left: 6px;

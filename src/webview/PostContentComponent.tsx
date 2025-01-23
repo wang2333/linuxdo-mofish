@@ -143,7 +143,7 @@ export const PostContentComponent: React.FC<PostContentComponentProps> = ({ cont
       <div className='title-container'>
         <h1 className='title'>{content.title}</h1>
         <a href={content.url} target='_blank' className='external-link'>
-          在浏览器中打开
+          查看原文
         </a>
       </div>
 
