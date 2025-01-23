@@ -1,9 +1,10 @@
 {
   "name": "linuxdo",
-  "displayName": "Linux.do Forum",
-  "description": "Access linux.do forum in VSCode",
+  "displayName": "Linux.do沉浸式摸鱼",
+  "description": "快来体验Linux.do沉浸式摸鱼",
   "publisher": "wang",
   "version": "0.0.1",
+  "repository": "https://github.com/wang2333/linuxdo-mofish",
   "engines": {
     "vscode": "^1.85.0"
   },
