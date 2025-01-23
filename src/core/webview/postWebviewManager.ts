@@ -3,16 +3,37 @@ import { ForumPost } from '../../types/forum';
 import { ForumService } from '../../services/forumService';
 
 export class PostWebviewManager {
-  constructor(
-    private readonly context: vscode.ExtensionContext,
-    private readonly forumService: ForumService
-  ) {}
+  private currentPanel: vscode.WebviewPanel | undefined;
+  private static instance: PostWebviewManager | undefined;
+  private context: vscode.ExtensionContext;
+  private forumService: ForumService;
+
+  private constructor(context: vscode.ExtensionContext, forumService: ForumService) {
+    this.context = context;
+    this.forumService = forumService;
+  }
+
+  public static getInstance(
+    context: vscode.ExtensionContext,
+    forumService: ForumService
+  ): PostWebviewManager {
+    if (!PostWebviewManager.instance) {
+      PostWebviewManager.instance = new PostWebviewManager(context, forumService);
+    }
+    return PostWebviewManager.instance;
+  }
 
   /**
    * 打开帖子
    * @param post 帖子
    */
   async openPost(post: ForumPost): Promise<void> {
+    // 如果已有打开的panel，先关闭它
+    if (this.currentPanel) {
+      this.currentPanel.dispose();
+      this.currentPanel = undefined;
+    }
+
     const panel = vscode.window.createWebviewPanel(
       'postContent',
       this.truncateTitle(post.title),
@@ -22,6 +43,14 @@ export class PostWebviewManager {
         retainContextWhenHidden: true
       }
     );
+
+    // 保存当前panel的引用
+    this.currentPanel = panel;
+
+    // 监听panel关闭事件
+    panel.onDidDispose(() => {
+      this.currentPanel = undefined;
+    });
 
     const postContent = await this.forumService.getPostContent(post.id);
     const scriptPath = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'postContent.js');

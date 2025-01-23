@@ -36,7 +36,7 @@ export class PostCommands {
    */
   private async openPost(post: ForumPost): Promise<void> {
     try {
-      const webviewManager = new PostWebviewManager(this.context, this.forumService);
+      const webviewManager = PostWebviewManager.getInstance(this.context, this.forumService);
       await webviewManager.openPost(post);
     } catch (error) {
       console.error('打开帖子失败:', error);
