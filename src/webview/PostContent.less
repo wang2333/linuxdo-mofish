@@ -7,6 +7,7 @@
 @code-background: var(--vscode-textCodeBlock-background);
 @quote-background: var(--vscode-editor-inactiveSelectionBackground);
 @meta-color: var(--vscode-descriptionForeground);
+@title-background: var(--vscode-badge-background);
 
 // 全局样式
 body {
@@ -47,27 +48,25 @@ p {
     padding: 10px 16px;
     background: @hover-color;
     border-radius: 8px;
+    margin-bottom: 16px;
 
-    &-left {
+    .post-meta-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
 
-      .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 4px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s ease;
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
 
-        &:hover {
-          transform: scale(1.05);
+        .user-title {
+          font-size: 12px;
+          color: @meta-color;
+          background-color: @title-background;
+          padding: 1px 6px;
+          border-radius: 4px;
         }
-      }
-
-      .username {
-        font-weight: 500;
-        color: @primary-color;
       }
     }
 
@@ -181,6 +180,76 @@ p {
         color: @meta-color;
       }
     }
+
+    .comment-meta {
+      .reply-link {
+        background: none;
+        border: none;
+        color: @primary-color;
+        cursor: pointer;
+        padding: 4px 8px;
+        font-size: 13px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
+  }
+
+  .username.author {
+    color: var(--vscode-textLink-foreground);
+    font-weight: 600;
+  }
+  .author-tag {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 4px;
+    font-size: 12px;
+    line-height: 1;
+    color: var(--vscode-textLink-foreground);
+    background-color: #0366d61a;
+    border-radius: 3px;
+    font-weight: normal;
+  }
+
+  .loading-indicator {
+    text-align: center;
+    padding: 16px;
+    color: @meta-color;
+    font-size: 14px;
+
+    span {
+      display: inline-block;
+      position: relative;
+      padding-right: 24px;
+
+      &::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        border: 2px solid transparent;
+        border-top-color: @meta-color;
+        border-right-color: @meta-color;
+        border-radius: 50%;
+        animation: loading-spinner 0.8s linear infinite;
+      }
+    }
+  }
+}
+
+@keyframes loading-spinner {
+  from {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateY(-50%) rotate(360deg);
   }
 }
 
@@ -190,7 +259,6 @@ p {
   border-radius: 8px;
   padding: 8px 16px;
   background: @background-color;
-  transition: transform 0.2s ease;
   margin-bottom: 8px;
 
   .source {
@@ -217,11 +285,16 @@ p {
     > img,
     .aspect-image {
       float: left;
-      max-width: 200px;
       height: auto;
+      max-width: 200px;
+      max-height: 150px;
       margin-right: 10px;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      img {
+        max-width: 200px;
+        max-height: 150px;
+      }
     }
 
     p {
@@ -276,23 +349,6 @@ blockquote,
   }
 }
 
-// 图片预览
-.lightbox-wrapper {
-  display: inline-block;
-  position: relative;
-  margin: 8px 0;
-  border-radius: 8px;
-  overflow: hidden;
-
-  img {
-    transition: transform 0.3s ease;
-
-    &:hover {
-      transform: scale(1.02);
-    }
-  }
-}
-
 .load-more {
   text-align: center;
   margin: 20px 0;
@@ -314,6 +370,109 @@ blockquote,
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+  }
+}
+
+.comment-header {
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .user-info-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .user-title {
+        font-size: 12px;
+        color: @meta-color;
+        background-color: @title-background;
+        padding: 1px 6px;
+        border-radius: 4px;
+      }
+    }
+  }
+}
+
+// 回复框样式
+.reply-box {
+  margin: 20px 0;
+  padding: 16px;
+  background: @hover-color;
+  border-radius: 8px;
+
+  .reply-to-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    padding: 8px;
+    background: @background-color;
+    border-radius: 4px;
+    font-size: 13px;
+    color: @meta-color;
+
+    .cancel-reply {
+      background: none;
+      border: none;
+      color: @meta-color;
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .reply-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .reply-input {
+      width: 100%;
+      min-height: 100px;
+      padding: 12px;
+      border: 1px solid @border-color;
+      border-radius: 4px;
+      background: @background-color;
+      color: @text-color;
+      font-family: var(--vscode-font-family);
+      font-size: 14px;
+      resize: vertical;
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: @primary-color;
+      }
+    }
+
+    .reply-button {
+      align-self: flex-end;
+      background-color: var(--vscode-button-background);
+      color: var(--vscode-button-foreground);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: var(--vscode-button-hoverBackground);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
     }
   }
 }

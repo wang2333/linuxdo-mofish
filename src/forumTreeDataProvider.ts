@@ -1,6 +1,13 @@
 import * as vscode from 'vscode';
-import { ForumService, ForumPost, PostListType } from './forumService';
+import { ForumService } from './services/forumService';
+import { ForumPost, PostListType } from './types/forum';
 import { DEFAULT_GROUP_STATES, DEFAULT_PAGE, GROUP_ICONS } from './constants/forum';
+
+interface GroupState {
+  isExpanded: boolean;
+  currentPage: number;
+  cachedData?: ForumPost[];
+}
 
 interface PostGroup {
   label: string;
@@ -126,18 +133,19 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
 
   private createPostTreeItem(post: ForumPost): vscode.TreeItem {
     const item = new vscode.TreeItem('');
+
     item.tooltip = `作者: ${post.author}\n发布时间: ${post.date}\n浏览量: ${post.views}`;
     item.label = {
-      label: `${post.views}  ${post.title}`,
-      highlights: []
+      label: `[${post.category}] ${post.title}`
+      // highlights: [[1, (post.category?.length || 0) + 1]] // 高亮包括方括号的分类名称
     };
-    item.description = post.author;
+    item.description = `${post.author} 👁️${post.views}`;
     item.command = {
       command: 'linuxdo.openPost',
       title: '打开帖子',
       arguments: [post]
     };
-    item.iconPath = new vscode.ThemeIcon('eye', new vscode.ThemeColor('charts.foreground'));
+    // item.iconPath = new vscode.ThemeIcon('eye', new vscode.ThemeColor('charts.foreground'));
     return item;
   }
 
@@ -191,7 +199,7 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     }
 
     if (group.contextValue === 'favorites') {
-      // TODO: 实现收藏帖子的获取
+      // TODO: 实现待开发
       return [];
     }
 

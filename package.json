@@ -2,6 +2,7 @@
   "name": "linuxdo",
   "displayName": "Linux.do Forum",
   "description": "Access linux.do forum in VSCode",
+  "publisher": "wang",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.85.0"
@@ -19,7 +20,7 @@
         {
           "id": "linuxdo-explorer",
           "title": "LINUX DO",
-          "icon": "resources/forum.svg"
+          "icon": "resources/linuxdo.svg"
         }
       ]
     },
@@ -32,7 +33,7 @@
         },
         {
           "id": "collect",
-          "name": "收藏",
+          "name": "待开发",
           "group": "navigation@1"
         }
       ]
@@ -52,6 +53,16 @@
         "command": "linuxdo.resetPage",
         "title": "重置",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "linuxdo.login",
+        "title": "登录 Linux.do",
+        "icon": "$(sign-in)"
+      },
+      {
+        "command": "linuxdo.reply",
+        "title": "回复话题",
+        "icon": "$(comment)"
       }
     ],
     "menus": {
@@ -71,7 +82,29 @@
           "when": "view == linuxdoPosts && viewItem =~ /post-group-*/",
           "group": "inline"
         }
+      ],
+      "view/title": [
+        {
+          "command": "linuxdo.login",
+          "when": "view == linuxdoPosts",
+          "group": "navigation"
+        }
       ]
+    },
+    "configuration": {
+      "title": "Linux.do",
+      "properties": {
+        "linuxdo.cookie": {
+          "type": "string",
+          "default": "",
+          "description": "Linux.do 网站的 Cookie"
+        },
+        "linuxdo.csrfToken": {
+          "type": "string",
+          "default": "",
+          "description": "Linux.do 网站的 CSRF Token"
+        }
+      }
     }
   },
   "scripts": {

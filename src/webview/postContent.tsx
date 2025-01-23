@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { PostContentComponent } from './PostContentComponent';
 import './PostContent.less';
-import type { PostContent } from '../forumService';
+import type { PostContent } from '../types/forum';
 
 // 获取vscode API
 declare global {
@@ -40,7 +40,7 @@ const App: React.FC = () => {
   }, []);
 
   if (!content) {
-    return <div>Loading...</div>;
+    return <div style={{ textAlign: 'center', marginTop: '20px' }}>Loading...</div>;
   }
 
   return (
