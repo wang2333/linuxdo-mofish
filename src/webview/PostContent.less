@@ -54,6 +54,9 @@ p {
       display: flex;
       align-items: center;
       gap: 8px;
+      .avatar {
+        border-radius: 4px;
+      }
 
       .user-info {
         display: flex;
@@ -76,6 +79,28 @@ p {
       gap: 16px;
       color: @meta-color;
       font-size: 13px;
+
+      .post-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        .icon {
+          font-size: 14px;
+        }
+
+        &.views,
+        &.likes {
+          background: @background-color;
+          padding: 2px 8px;
+          border-radius: 12px;
+          transition: transform 0.2s;
+
+          &:hover {
+            transform: scale(1.05);
+          }
+        }
+      }
     }
   }
 

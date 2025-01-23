@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { ForumService } from './services/forumService';
-import { ForumPost, PostListType } from './types/forum';
-import { DEFAULT_GROUP_STATES, DEFAULT_PAGE, GROUP_ICONS } from './constants/forum';
+import { ForumService } from '../services/forumService';
+import { ForumPost, PostListType } from '../types/forum';
+import { DEFAULT_GROUP_STATES, DEFAULT_PAGE, GROUP_ICONS } from '../constants/forum';
 
 interface GroupState {
   isExpanded: boolean;
@@ -20,19 +20,23 @@ interface PostGroup {
 
 type TreeItem = PostGroup | ForumPost;
 
+/**
+ * 论坛树数据提供者
+ */
 export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData: vscode.EventEmitter<TreeItem | undefined | null | void> =
     new vscode.EventEmitter<TreeItem | undefined | null | void>();
   readonly onDidChangeTreeData: vscode.Event<TreeItem | undefined | null | void> =
     this._onDidChangeTreeData.event;
 
-  // 分组状态管理
+  /** 分组状态管理 */
   private groupStates = new Map<string, any>();
 
   constructor(private forumService: ForumService) {
     this.initializeGroupStates();
   }
 
+  /** 初始化分组状态 */
   private initializeGroupStates(): void {
     // 初始化每个分组的状态
     Object.entries(DEFAULT_GROUP_STATES).forEach(([groupId, isExpanded]) => {
@@ -43,6 +47,7 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     });
   }
 
+  /** 刷新 */
   refresh(): void {
     // 清除所有缓存的数据
     this.groupStates.forEach(state => {
@@ -51,6 +56,11 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     this._onDidChangeTreeData.fire(undefined);
   }
 
+  /**
+   * 处理分组展开/折叠
+   * @param group 分组
+   * @param expanded 是否展开
+   */
   async handleGroupExpansion(group: PostGroup, expanded: boolean): Promise<void> {
     const groupId = group.type || group.contextValue || '';
     const state = this.getGroupState(groupId);
@@ -63,6 +73,11 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     }
   }
 
+  /**
+   * 处理分页
+   * @param group 分组
+   * @param isNext 是否下一页
+   */
   async handlePaging(group: PostGroup, isNext: boolean): Promise<void> {
     if (!group.type) {
       return;
@@ -74,6 +89,10 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     this._onDidChangeTreeData.fire(group);
   }
 
+  /**
+   * 处理重置
+   * @param group 分组
+   */
   async handleReset(group: PostGroup): Promise<void> {
     if (!group.type) {
       return;
@@ -85,6 +104,11 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     this._onDidChangeTreeData.fire(group);
   }
 
+  /**
+   * 获取分组状态
+   * @param groupId 分组ID
+   * @returns 分组状态
+   */
   private getGroupState(groupId: string): GroupState {
     let state = this.groupStates.get(groupId);
     if (!state) {
@@ -94,6 +118,11 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     return state;
   }
 
+  /**
+   * 获取树节点
+   * @param element 树节点
+   * @returns 树节点
+   */
   getTreeItem(element: TreeItem): vscode.TreeItem {
     if (this.isPostGroup(element)) {
       return this.createGroupTreeItem(element);
@@ -102,6 +131,11 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     }
   }
 
+  /**
+   * 创建分组树节点
+   * @param group 分组
+   * @returns 树节点
+   */
   private createGroupTreeItem(group: PostGroup): vscode.TreeItem {
     const groupId = group.type || group.contextValue || '';
     const state = this.getGroupState(groupId);
@@ -131,6 +165,11 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     return treeItem;
   }
 
+  /**
+   * 创建帖子树节点
+   * @param post 帖子
+   * @returns 树节点
+   */
   private createPostTreeItem(post: ForumPost): vscode.TreeItem {
     const item = new vscode.TreeItem('');
 
@@ -145,10 +184,14 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
       title: '打开帖子',
       arguments: [post]
     };
-    // item.iconPath = new vscode.ThemeIcon('eye', new vscode.ThemeColor('charts.foreground'));
     return item;
   }
 
+  /**
+   * 获取子节点
+   * @param element 树节点
+   * @returns 子节点
+   */
   async getChildren(element?: TreeItem): Promise<TreeItem[]> {
     if (!element) {
       return this.getRootGroups();
@@ -161,11 +204,20 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     return [];
   }
 
+  /**
+   * 获取根分组
+   * @returns 根分组
+   */
   private getRootGroups(): PostGroup[] {
     return [
       {
         label: '最新创建',
         type: 'latest',
+        collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
+      },
+      {
+        label: '最新回复',
+        type: 'latest2',
         collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
       },
       {
@@ -177,15 +229,15 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
         label: '新话题',
         type: 'new',
         collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
-      },
-      {
-        label: '未读话题',
-        type: 'unread',
-        collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
       }
     ];
   }
 
+  /**
+   * 获取分组子节点
+   * @param group 分组
+   * @returns 子节点
+   */
   private async getGroupChildren(group: PostGroup): Promise<TreeItem[]> {
     const groupId = group.type || group.contextValue || '';
     const state = this.getGroupState(groupId);
@@ -210,6 +262,12 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
     return [];
   }
 
+  /**
+   * 获取分组帖子
+   * @param type 帖子类型
+   * @param state 分组状态
+   * @returns 帖子
+   */
   private async getPostsForGroup(type: PostListType, state: GroupState): Promise<ForumPost[]> {
     if (!state.cachedData) {
       try {
@@ -219,9 +277,14 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
         return [];
       }
     }
-    return state.cachedData;
+    return state.cachedData || [];
   }
 
+  /**
+   * 判断是否是分组
+   * @param item 树节点
+   * @returns 是否是分组
+   */
   private isPostGroup(item: TreeItem): item is PostGroup {
     return ('type' in item || 'children' in item) && 'collapsibleState' in item;
   }

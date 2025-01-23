@@ -3,6 +3,9 @@ import { API_ENDPOINTS } from '../constants/api';
 import { http } from '../utils/http';
 import { CATEGORIES } from '../constants/forum';
 
+/**
+ * 论坛服务
+ */
 export class ForumService {
   private static instance: ForumService;
 
@@ -15,20 +18,32 @@ export class ForumService {
     return ForumService.instance;
   }
 
-  private getAvatarUrl(username: string, avatarTemplate: string): string {
+  /**
+   * 获取头像URL
+   * @param username 用户名
+   * @param avatarTemplate 头像模板
+   * @returns 头像URL
+   */
+  private getAvatarUrl(avatarTemplate: string): string {
     if (!avatarTemplate) {
       return `${http['baseURL']}/images/avatar.png`;
     }
     return `${http['baseURL']}${avatarTemplate.replace('{size}', '45')}`;
   }
 
+  /**
+   * 获取最新帖子
+   * @param type 帖子类型
+   * @param page 页码
+   * @returns 帖子
+   */
   public async getLatestPosts(
     type: PostListType = 'latest',
     page: number = 1
   ): Promise<ForumPost[]> {
     try {
       const response = await http.get<{ topic_list: { topics: any[] }; users: any[] }>(
-        API_ENDPOINTS.LATEST_POSTS(type),
+        API_ENDPOINTS.LATEST_POSTS(type === 'latest2' ? 'latest' : type),
         {
           params: {
             order: type === 'latest' ? 'created' : '',
@@ -56,6 +71,11 @@ export class ForumService {
     }
   }
 
+  /**
+   * 获取帖子内容
+   * @param postId 帖子ID
+   * @returns 帖子内容
+   */
   public async getPostContent(postId: string): Promise<PostContent> {
     try {
       const response = await http.get<{
@@ -63,6 +83,8 @@ export class ForumService {
         post_stream: { posts: Post[]; stream: number[] };
         posts_count: number;
         category_id: number;
+        like_count: number;
+        views: number;
       }>(API_ENDPOINTS.POST_CONTENT(postId), {
         params: {
           track_visit: 'true',
@@ -73,7 +95,6 @@ export class ForumService {
       const posts = response.post_stream.posts;
       const mainPost = posts[0];
       const comments = posts.slice(1);
-      const commentsMap = new Map(posts.map(post => [post.post_number, post]));
 
       return {
         title: response.title || '',
@@ -82,15 +103,16 @@ export class ForumService {
         mainPost: {
           username: mainPost.username || '',
           userTitle: mainPost.user_title || '',
-          avatarUrl: this.getAvatarUrl(mainPost.username, mainPost.avatar_template),
+          avatarUrl: this.getAvatarUrl(mainPost.avatar_template),
           content: mainPost.cooked || '',
-          createdAt: mainPost.created_at || new Date().toISOString(),
-          likeCount: mainPost.like_count
+          createdAt: mainPost.created_at || new Date().toISOString()
         },
-        comments: this.transformComments(comments, commentsMap),
+        comments: this.transformComments(comments),
         hasMoreComments: posts.length < response.posts_count,
         totalComments: response.posts_count,
-        allPostIds: response.post_stream.stream
+        allPostIds: response.post_stream.stream,
+        likeCount: response.like_count,
+        views: response.views
       };
     } catch (error) {
       console.error('获取帖子内容失败:', error);
@@ -98,11 +120,17 @@ export class ForumService {
     }
   }
 
-  private transformComments(comments: Post[], commentsMap: Map<number, Post>): Comment[] {
+  /**
+   * 转换评论
+   * @param comments 评论
+   * @param commentsMap 评论映射
+   * @returns 转换后的评论
+   */
+  private transformComments(comments: Post[]): Comment[] {
     return comments.map(comment => ({
       id: comment.id,
       username: comment.username || '',
-      avatarUrl: this.getAvatarUrl(comment.username, comment.avatar_template),
+      avatarUrl: this.getAvatarUrl(comment.avatar_template),
       content: comment.cooked || '',
       createdAt: comment.created_at || new Date().toISOString(),
       likeCount: comment.like_count,
@@ -110,16 +138,19 @@ export class ForumService {
       replyTo: comment.reply_to_user
         ? {
             username: comment.reply_to_user.username,
-            avatarUrl: this.getAvatarUrl(
-              comment.reply_to_user.username,
-              comment.reply_to_user.avatar_template
-            ),
+            avatarUrl: this.getAvatarUrl(comment.reply_to_user.avatar_template),
             postNumber: comment.reply_to_post_number || 0
           }
         : undefined
     }));
   }
 
+  /**
+   * 加载更多评论
+   * @param postId 帖子ID
+   * @param postNumbers 帖子编号
+   * @returns 评论
+   */
   public async loadMoreComments(postId: string, postNumbers: number[]): Promise<Comment[]> {
     try {
       const params = new URLSearchParams();
@@ -134,15 +165,20 @@ export class ForumService {
       );
 
       const posts = response.post_stream.posts;
-      const commentsMap = new Map(posts.map(post => [post.post_number, post]));
 
-      return this.transformComments(posts, commentsMap);
+      return this.transformComments(posts);
     } catch (error) {
       console.error('加载更多评论失败:', error);
       throw error;
     }
   }
 
+  /**
+   * 获取下一个评论ID
+   * @param lastCommentId 最后一个评论ID
+   * @param allPostIds 所有帖子ID
+   * @returns 下一个评论ID
+   */
   public async getNextCommentIds(lastCommentId: number, allPostIds: number[]): Promise<number[]> {
     const currentIndex = allPostIds.indexOf(lastCommentId);
     if (currentIndex !== -1 && currentIndex < allPostIds.length - 1) {
@@ -151,6 +187,13 @@ export class ForumService {
     return [];
   }
 
+  /**
+   * 回复帖子
+   * @param postId 帖子ID
+   * @param content 内容
+   * @param replyToId 回复到ID
+   * @param categoryId 分类ID
+   */
   public async replyToPost(
     postId: string,
     content: string,

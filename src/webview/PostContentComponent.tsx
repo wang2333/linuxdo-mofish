@@ -166,9 +166,12 @@ export const PostContentComponent: React.FC<PostContentComponentProps> = ({ cont
           <span className='post-meta-item time-ago'>
             {formatTimeAgo(content.mainPost.createdAt)}
           </span>
-          {content.mainPost.likeCount ? (
-            <span className='like-count'>{content.mainPost.likeCount}</span>
-          ) : null}
+          <span className='post-meta-item views'>
+            <i className='icon'>👁️</i> {content.views || 0}
+          </span>
+          <span className='post-meta-item likes'>
+            <i className='icon'>👍</i> {content.likeCount || 0}
+          </span>
         </div>
       </div>
       <div
