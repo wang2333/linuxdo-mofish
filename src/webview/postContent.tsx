@@ -16,6 +16,7 @@ const vscode = window.acquireVsCodeApi();
 
 const App: React.FC = () => {
   const [content, setContent] = useState<(PostContent & { id: string }) | null>(null);
+  const [hasValidCredentials, setHasValidCredentials] = useState(false);
 
   useEffect(() => {
     // 监听来自 VSCode 的消息
@@ -27,6 +28,10 @@ const App: React.FC = () => {
         case 'setContent':
           console.log('Setting content:', message.content);
           setContent(message.content);
+          break;
+        case 'setCredentials':
+          console.log('Setting credentials:', message.hasValidCredentials);
+          setHasValidCredentials(message.hasValidCredentials);
           break;
       }
     };
@@ -45,7 +50,11 @@ const App: React.FC = () => {
 
   return (
     <React.StrictMode>
-      <PostContentComponent content={content} vscode={vscode} />
+      <PostContentComponent
+        content={content}
+        vscode={vscode}
+        hasValidCredentials={hasValidCredentials}
+      />
     </React.StrictMode>
   );
 };

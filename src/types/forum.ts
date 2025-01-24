@@ -75,6 +75,8 @@ export interface Comment {
   likeCount?: number;
   /** 用户标题 */
   userTitle?: string;
+  /** 帖子编号 */
+  postNumber: number;
   /** 回复到 */
   replyTo?: {
     /** 作者 */

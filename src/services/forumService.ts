@@ -108,8 +108,8 @@ export class ForumService {
           createdAt: mainPost.created_at || new Date().toISOString()
         },
         comments: this.transformComments(comments),
-        hasMoreComments: posts.length < response.posts_count,
-        totalComments: response.posts_count,
+        hasMoreComments: posts.length < response.posts_count - 1,
+        totalComments: response.posts_count - 1,
         allPostIds: response.post_stream.stream,
         likeCount: response.like_count,
         views: response.views
@@ -129,6 +129,7 @@ export class ForumService {
   private transformComments(comments: Post[]): Comment[] {
     return comments.map(comment => ({
       id: comment.id,
+      postNumber: comment.post_number,
       username: comment.username || '',
       avatarUrl: this.getAvatarUrl(comment.avatar_template),
       content: comment.cooked || '',

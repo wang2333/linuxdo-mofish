@@ -273,7 +273,7 @@ export class ForumTreeDataProvider implements vscode.TreeDataProvider<TreeItem> 
       try {
         state.cachedData = await this.forumService.getLatestPosts(type, state.currentPage);
       } catch (error: any) {
-        vscode.window.showErrorMessage(error.response.data.errors.join(','));
+        vscode.window.showErrorMessage(error.response.data.errors[0]);
         return [];
       }
     }

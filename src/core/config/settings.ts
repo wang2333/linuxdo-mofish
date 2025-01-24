@@ -28,4 +28,14 @@ export class Settings {
   static getCsrfToken(): string {
     return vscode.workspace.getConfiguration(this.CONFIG_SECTION).get<string>('csrfToken') || '';
   }
+
+  /**
+   * 检查是否有有效的登录凭证
+   * @returns 如果cookie和csrfToken都存在且不为空则返回true
+   */
+  static hasValidCredentials(): boolean {
+    const cookie = this.getCookie();
+    const csrfToken = this.getCsrfToken();
+    return cookie.trim() !== '' && csrfToken.trim() !== '';
+  }
 }

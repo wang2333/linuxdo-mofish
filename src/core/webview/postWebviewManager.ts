@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { ForumPost } from '../../types/forum';
 import { ForumService } from '../../services/forumService';
+import { Settings } from '../config/settings';
 
 export class PostWebviewManager {
   private currentPanel: vscode.WebviewPanel | undefined;
@@ -52,20 +53,32 @@ export class PostWebviewManager {
       this.currentPanel = undefined;
     });
 
+    // 获取帖子内容
     const postContent = await this.forumService.getPostContent(post.id);
-    const scriptPath = vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'postContent.js');
-    const scriptUri = panel.webview.asWebviewUri(scriptPath);
 
+    // 获取webview内容
+    const scriptUri = panel.webview.asWebviewUri(
+      vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'postContent.js')
+    );
     panel.webview.html = this.getWebviewContent(scriptUri);
 
+    // 设置消息处理器
+    this.setupMessageHandlers(panel, parseInt(post.id));
+
+    // 等待一段时间确保webview已加载
     setTimeout(() => {
+      // 发送帖子内容
       panel.webview.postMessage({
         type: 'setContent',
         content: { ...postContent, id: post.id }
       });
-    }, 500);
 
-    this.setupMessageHandlers(panel, Number(post.id));
+      // 发送凭证状态
+      panel.webview.postMessage({
+        type: 'setCredentials',
+        hasValidCredentials: Settings.hasValidCredentials()
+      });
+    }, 500);
   }
 
   /**
@@ -194,9 +207,9 @@ export class PostWebviewManager {
       });
 
       vscode.window.showInformationMessage('回复成功！');
-    } catch (error) {
+    } catch (error: any) {
       console.error('回复失败:', error);
-      vscode.window.showErrorMessage('回复失败，请确保已登录并重试');
+      vscode.window.showErrorMessage(error.response.data.errors[0]);
     }
   }
 }

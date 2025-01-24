@@ -31,6 +31,7 @@ p {
 .username.author {
   color: var(--vscode-textLink-foreground);
   font-weight: 600;
+  text-shadow: 0 0 10px var(--vscode-textLink-foreground);
 }
 
 // 帖子容器
@@ -111,7 +112,6 @@ p {
 
   .post-content {
     line-height: 1.8;
-    margin-bottom: 48px;
 
     pre {
       background: @code-background;
@@ -121,7 +121,7 @@ p {
       font-family: var(--vscode-editor-font-family);
       font-size: 13px;
       line-height: 1.5;
-      margin: 16px 0;
+      margin-top: 10px;
     }
 
     code {
@@ -131,19 +131,21 @@ p {
       background: @code-background;
       border-radius: 4px;
     }
+    .lightbox-wrapper {
+      margin-top: 10px;
+    }
   }
 }
 
 // 评论区
 .comments-container {
-  margin-top: 48px;
+  margin-top: 20px;
   border-top: 1px solid @border-color;
-  padding-top: 24px;
 
   h2 {
     font-size: 20px;
     font-weight: 600;
-    margin: 0 0 15px;
+    margin: 15px 0;
     color: @text-color;
   }
 
@@ -280,12 +282,12 @@ p {
 
 // Onebox 样式
 .onebox {
+  display: inline-block;
   border: 1px solid @border-color;
   border-radius: 8px;
-  padding: 8px 16px;
+  padding: 4px 8px;
   background: @background-color;
-  margin-bottom: 8px;
-
+  margin-top: 10px;
   .source {
     display: flex;
     align-items: center;
@@ -351,8 +353,8 @@ p {
 // 引用样式
 blockquote,
 .quote {
-  margin: 16px 0;
-  padding: 16px 24px;
+  padding: 8px;
+  margin-bottom: 10px;
   background: @quote-background;
   border-left: 4px solid @primary-color;
   border-radius: 8px;
@@ -363,8 +365,6 @@ blockquote,
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
     border-bottom: 1px solid @border-color;
 
     .avatar {
@@ -423,10 +423,10 @@ blockquote,
 
 // 回复框样式
 .reply-box {
-  margin: 20px 0;
   padding: 16px;
   background: @hover-color;
   border-radius: 8px;
+  margin-top: 10px;
 
   .reply-to-info {
     display: flex;

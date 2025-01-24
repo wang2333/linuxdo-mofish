@@ -5,6 +5,7 @@ import type { PostContent, Comment } from '../types/forum';
 interface PostContentComponentProps {
   content: PostContent & { id: string };
   vscode: any;
+  hasValidCredentials: boolean;
 }
 
 const formatTimeAgo = (dateStr: string): string => {
@@ -40,7 +41,11 @@ const formatTimeAgo = (dateStr: string): string => {
   return `${diffInYears} 年前`;
 };
 
-export const PostContentComponent: React.FC<PostContentComponentProps> = ({ content, vscode }) => {
+export const PostContentComponent: React.FC<PostContentComponentProps> = ({
+  content,
+  vscode,
+  hasValidCredentials
+}) => {
   const [comments, setComments] = useState<Comment[]>(content.comments);
   const [hasMore, setHasMore] = useState(content.hasMoreComments);
   const [isLoading, setIsLoading] = useState(false);
@@ -180,35 +185,42 @@ export const PostContentComponent: React.FC<PostContentComponentProps> = ({ cont
       />
 
       {/* 回复框 */}
-      <div className='reply-box' ref={replyBoxRef}>
-        {replyTo && (
-          <div className='reply-to-info'>
-            回复 {replyTo.username}
-            <button className='cancel-reply' onClick={() => setReplyTo(null)}>
-              取消回复
+      {hasValidCredentials && (
+        <div className='reply-box' ref={replyBoxRef}>
+          {replyTo && (
+            <div className='reply-to-info'>
+              回复 {replyTo.username}
+              <button className='cancel-reply' onClick={() => setReplyTo(null)}>
+                取消回复
+              </button>
+            </div>
+          )}
+          <div className='reply-input-container'>
+            <textarea
+              className='reply-input'
+              value={replyContent}
+              onChange={e => setReplyContent(e.target.value)}
+              placeholder='写下你的回复...'
+              rows={4}
+            />
+            <button className='reply-button' onClick={handleReply} disabled={!replyContent.trim()}>
+              发送回复
             </button>
           </div>
-        )}
-        <div className='reply-input-container'>
-          <textarea
-            className='reply-input'
-            value={replyContent}
-            onChange={e => setReplyContent(e.target.value)}
-            placeholder='写下你的回复...'
-            rows={4}
-          />
-          <button className='reply-button' onClick={handleReply} disabled={!replyContent.trim()}>
-            发送回复
-          </button>
         </div>
-      </div>
+      )}
 
       {/* 评论 */}
       {comments.length > 0 && (
         <div className='comments-container'>
           <h2>评论 ({content.totalComments})</h2>
           {comments.map(comment => (
-            <div key={comment.id} className='comment'>
+            <div
+              key={comment.id}
+              id={`comment-${comment.id}`}
+              data-post-number={comment.postNumber}
+              className='comment'
+            >
               <div className='comment-header'>
                 <div className='user-info'>
                   <img className='avatar' src={comment.avatarUrl} alt={comment.username} />
@@ -227,7 +239,24 @@ export const PostContentComponent: React.FC<PostContentComponentProps> = ({ cont
                 </div>
                 <div className='comment-meta'>
                   {comment.replyTo && (
-                    <div className='reply-info'>
+                    <div
+                      className='reply-info'
+                      onClick={() => {
+                        const targetComment = document.querySelector(
+                          `[data-post-number="${comment.replyTo?.postNumber}"]`
+                        ) as HTMLElement;
+                        if (targetComment) {
+                          targetComment.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          // 添加一个临时的高亮效果
+                          targetComment.style.backgroundColor =
+                            'var(--vscode-editor-selectionBackground)';
+                          setTimeout(() => {
+                            targetComment.style.backgroundColor = '';
+                          }, 500);
+                        }
+                      }}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <span className='reply-icon'>➜</span>
                       <div className='reply-to'>
                         <img
@@ -251,12 +280,14 @@ export const PostContentComponent: React.FC<PostContentComponentProps> = ({ cont
                   {comment.likeCount ? (
                     <span className='like-count'>{comment.likeCount}</span>
                   ) : null}
-                  <button
-                    className='reply-link'
-                    onClick={() => handleReplyClick(comment.id, comment.username)}
-                  >
-                    回复
-                  </button>
+                  {hasValidCredentials && (
+                    <button
+                      className='reply-link'
+                      onClick={() => handleReplyClick(comment.id, comment.username)}
+                    >
+                      回复
+                    </button>
+                  )}
                 </div>
               </div>
               <div
